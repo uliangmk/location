@@ -119,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 主要遍历两个provider network 和gps
+     */
     private void initMock() throws Exception {
         boolean canMockPosition = (Settings.Secure.getInt(getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION, 0) != 0) || Build.VERSION.SDK_INT > 22;
         if (!canMockPosition) {
@@ -186,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
 
     private StartMockThread thread;
 
+    /**
+     * 需要不断的刷新位置信息，否则有可能被覆盖
+     */
     public class StartMockThread extends Thread {
         public boolean canWork = true;
 
