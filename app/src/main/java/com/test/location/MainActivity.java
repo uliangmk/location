@@ -8,7 +8,9 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,15 +26,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 200;
     private TextView tvLocation;
     private EditText etLat, etLon;
     private Button btSetLocation, btStart, btEnd;
+
+    private LocationManager locationManager;
+    private List<String> mockProviders = new ArrayList<>();
+
+    private StartMockThread thread;
+    int count = 0;
+    double realLat = 39.8985499;
+    double realLon = 116.465185;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +108,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private LocationManager locationManager;
-    private List<String> mockProviders = new ArrayList<>();
-
     private void initLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // 需要检查权限,否则编译报错,想抽取成方法都不行,还是会报错。只能这样重复 code 了。
@@ -112,11 +122,25 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         try {
+            initPosition();
             initMock();
         } catch (Exception e) {
-            Log.e("ulog", "3 -- " + e);
             Toast.makeText(MainActivity.this, "去开发者中开权限", Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * 产生随机数地理位置防止一直一个点
+     */
+    private void initPosition() {
+        int lat = (int) (Math.random() * 900) + 100;
+        int lon = (int) (Math.random() * 900) + 100;
+        String sLat = "39.898" + lat;
+        String sLon = "116.465" + lon;
+        double cacheLat = Double.valueOf(sLat);
+        double cacheLon = Double.valueOf(sLon);
+        realLat = cacheLat;
+        realLon = cacheLon;
     }
 
     /**
@@ -157,23 +181,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void startMockLocation() {
         if (thread != null) {
             return;
         }
-
         thread = new StartMockThread();
         thread.start();
     }
-
 
     public void stopMockLocation() {
         if (thread != null) {
             thread.canWork = false;
             thread = null;
         }
-
         mockProviders = locationManager.getProviders(true);
         for (String provider : mockProviders) {
             try {
@@ -186,8 +206,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    private StartMockThread thread;
 
     /**
      * 需要不断的刷新位置信息，否则有可能被覆盖
@@ -224,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
                         locationManager.setTestProviderLocation(providerStr, mockLocation);
                         count++;
                         updateLocation(mockLocation.getLatitude(), mockLocation.getLongitude());
-                        Log.i("ulog", " -- " + mockLocation.getLatitude() + "  纬度  " + mockLocation.getLongitude() + "  " + count);
                     }
                 } catch (Exception e) {
                     Log.e("ulog", "1 -- " + e);
@@ -237,19 +254,27 @@ public class MainActivity extends AppCompatActivity {
         tvLocation.post(new Runnable() {
             @Override
             public void run() {
-                tvLocation.setText("经度：" + latitude + "  纬度  " + longitude + "  " + count);
+                tvLocation.setText("经度：" + latitude + "  纬度  " + longitude + "  " + count + "\n" + getLocationAddress(latitude, longitude));
             }
         });
     }
 
-
-    int count = 0;
-
-
-    double testLat = 39.84433333;
-    double testLon = 116.46776555;
-
-    double realLat = 39.8985499;
-    double realLon = 116.465185;
-
+    private String getLocationAddress(double latitude, double longitude) {
+        String add = "";
+        Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.CHINESE);
+        try {
+            List<Address> addresses = geoCoder.getFromLocation(latitude, longitude, 1);
+            Address address = addresses.get(0);
+            int maxLine = address.getMaxAddressLineIndex();
+            if (maxLine >= 2) {
+                add = address.getAddressLine(0) + address.getAddressLine(1);
+            } else {
+                add = address.getAddressLine(0);
+            }
+        } catch (IOException e) {
+            add = "";
+            e.printStackTrace();
+        }
+        return add;
+    }
 }

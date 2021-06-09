@@ -9,7 +9,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:text="demo"
+        android:text="坐标"
         android:textColor="@color/black"
         android:layout_marginTop="20dp"
         android:id="@+id/tv_location"
