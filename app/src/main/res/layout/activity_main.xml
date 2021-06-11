@@ -9,45 +9,55 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:text="坐标"
-        android:textColor="@color/black"
-        android:layout_marginTop="20dp"
         android:id="@+id/tv_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="坐标"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_location_times"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black"
         android:textSize="15sp" />
 
     <EditText
-        android:visibility="gone"
         android:id="@+id/et_longitude"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
         android:hint="输入经度"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"/>
+        android:visibility="gone" />
+
     <EditText
-        android:visibility="gone"
         android:id="@+id/et_latitude"
-        android:hint="输入纬度"
         android:layout_width="match_parent"
-        android:layout_height="40dp"/>
+        android:layout_height="40dp"
+        android:hint="输入纬度"
+        android:visibility="gone" />
 
     <Button
-        android:layout_marginTop="20dp"
-        android:text="初始化"
         android:id="@+id/bt_set_location"
         android:layout_width="100dp"
-        android:layout_height="50dp"/>
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:text="初始化" />
 
     <Button
-        android:layout_marginTop="20dp"
-        android:text="开启"
         android:id="@+id/bt_start"
         android:layout_width="100dp"
-        android:layout_height="50dp"/>
-    <Button
+        android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:text="结束"
+        android:text="开启" />
+
+    <Button
         android:id="@+id/bt_end"
         android:layout_width="100dp"
-        android:layout_height="50dp"/>
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:text="结束" />
 
 </LinearLayout>

@@ -34,7 +34,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 200;
-    private TextView tvLocation;
+    private TextView tvLocation, tv_location_times;
     private EditText etLat, etLon;
     private Button btSetLocation, btStart, btEnd;
 
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         tvLocation = findViewById(R.id.tv_location);
+        tv_location_times = findViewById(R.id.tv_location_times);
         etLat = findViewById(R.id.et_latitude);
         etLon = findViewById(R.id.et_longitude);
         btSetLocation = findViewById(R.id.bt_set_location);
@@ -141,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         double cacheLon = Double.valueOf(sLon);
         realLat = cacheLat;
         realLon = cacheLon;
+        updateLocation(realLat, realLon);
     }
 
     /**
@@ -240,9 +242,8 @@ public class MainActivity extends AppCompatActivity {
                             mockLocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
                         }
                         locationManager.setTestProviderLocation(providerStr, mockLocation);
-                        count++;
-                        updateLocation(mockLocation.getLatitude(), mockLocation.getLongitude());
                     }
+                    updateLocationTimes();
                 } catch (Exception e) {
                     Log.e("ulog", "1 -- " + e);
                 }
@@ -254,7 +255,16 @@ public class MainActivity extends AppCompatActivity {
         tvLocation.post(new Runnable() {
             @Override
             public void run() {
-                tvLocation.setText("经度：" + latitude + "  纬度  " + longitude + "  " + count + "\n" + getLocationAddress(latitude, longitude));
+                tvLocation.setText("经度：" + latitude + "  纬度  " + longitude + "  " + "\n" + getLocationAddress(latitude, longitude));
+            }
+        });
+    }
+
+    private void updateLocationTimes() {
+        tv_location_times.post(new Runnable() {
+            @Override
+            public void run() {
+                tv_location_times.setText(++count + "");
             }
         });
     }
